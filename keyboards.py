@@ -1,11 +1,14 @@
 #keyboards.py
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup
-from database import db # <--- أضف هذا السطر
+from database import db
+from config import BOT_USERNAME # <--- إضافة هذا السطر
+
 # --- Keyboards for Users ---
 
 def start_keyboard():
     keyboard = [
         [InlineKeyboardButton("🛍️ تصفح الخدمات", callback_data="show_categories")],
+        [InlineKeyboardButton("🌐 فتح الخدمات (متطور)", web_app={"url": f"https://flasksssss.onrender.com/?user_id={{user_id}}" })], # <--- إضافة هذا الزر
         [InlineKeyboardButton("💰 شحن الرصيد", callback_data="recharge_balance")],
         [InlineKeyboardButton("👤 حسابي", callback_data="my_account")]
     ]
@@ -131,7 +134,7 @@ def admin_recharge_requests_menu_inline():
 
 def admin_manage_recharge_status_keyboard(request_id):
     keyboard = [
-        [InlineKeyboardButton("✅ اعتماد الطلب", callback_data=f"admin_approve_recharge_{request_id}")],
+        [InlineKeyboardButton("✅ اعتماد الطلب", callback_data=f"admin_approve_recharge_{request_id})")],
         [InlineKeyboardButton("❌ رفض الطلب", callback_data=f"admin_reject_recharge_{request_id}")],
         [InlineKeyboardButton("🔙 لإدارة طلبات الشحن", callback_data="admin_recharge_requests_menu")]
     ]

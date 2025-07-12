@@ -1,4 +1,4 @@
-
+#main.py
 import threading
 from flask import Flask, jsonify, render_template, request
 import sqlite3
@@ -7,7 +7,7 @@ import os
 app = Flask(__name__)
 DATABASE = 'store_bot.db'
 
-def get_db():
+def get_db_connection(): # <--- تم تغيير اسم الدالة لتجنب تضارب محتمل مع متغير `db`
     conn = sqlite3.connect(DATABASE)
     conn.row_factory = sqlite3.Row
     return conn
@@ -18,7 +18,7 @@ def index():
 
 @app.route('/categories')
 def get_categories():
-    conn = get_db()
+    conn = get_db_connection()
     cur = conn.cursor()
     cur.execute("SELECT * FROM categories WHERE parent_id IS NULL")
     return jsonify([dict(row) for row in cur.fetchall()])
@@ -26,7 +26,7 @@ def get_categories():
 @app.route('/subcategories')
 def get_subcategories():
     parent_id = request.args.get('parent_id')
-    conn = get_db()
+    conn = get_db_connection()
     cur = conn.cursor()
     cur.execute("SELECT * FROM categories WHERE parent_id = ?", (parent_id,))
     return jsonify([dict(row) for row in cur.fetchall()])
@@ -34,10 +34,36 @@ def get_subcategories():
 @app.route('/services')
 def get_services():
     subcategory_id = request.args.get('subcategory_id')
-    conn = get_db()
+    conn = get_db_connection()
     cur = conn.cursor()
     cur.execute("SELECT id, name, price FROM products WHERE category_id = ? AND is_available = 1", (subcategory_id,))
     return jsonify([dict(row) for row in cur.fetchall()])
+
+@app.route('/user_data') # <--- إضافة هذا المسار الجديد
+def get_user_data():
+    user_id = request.args.get('user_id')
+    if not user_id:
+        return jsonify({"error": "User ID is required"}), 400
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    # جلب الرصيد
+    cur.execute("SELECT balance FROM users WHERE id = ?", (user_id,))
+    user_balance_row = cur.fetchone()
+    balance = user_balance_row[0] if user_balance_row else 0.0
+
+    # جلب المبلغ المنفق (مجموع الـ total_amount من الطلبات المكتملة أو جميعها)
+    # هنا نفترض أنك تريد المبلغ المنفق على جميع الطلبات لهذا المستخدم
+    cur.execute("SELECT SUM(total_amount) FROM orders WHERE user_id = ? AND status = 'completed'", (user_id,)) # <--- يمكن تعديل status
+    amount_spent_row = cur.fetchone()
+    amount_spent = amount_spent_row[0] if amount_spent_row and amount_spent_row[0] is not None else 0.0
+    
+    return jsonify({
+        "user_id": user_id,
+        "balance": balance,
+        "amount_spent": amount_spent
+    })
 
 def run_flask():
     app.run(host='0.0.0.0', port=21155)
@@ -51,7 +77,7 @@ import logging
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, CallbackQueryHandler, filters, ContextTypes
 # استيراد من config.py
-from config import BOT_TOKEN, ADMIN_ID, USER_STATE, DEFAULT_ITEMS_PER_UNIT # DEFAULT_ITEMS_PER_UNIT لم تُستخدم هنا ولكن لا بأس بوجودها
+from config import BOT_TOKEN, ADMIN_ID, USER_STATE, DEFAULT_ITEMS_PER_UNIT, BOT_USERNAME # DEFAULT_ITEMS_PER_UNIT لم تُستخدم هنا ولكن لا بأس بوجودها
 # استيراد معالجات المستخدمين
 from user_handlers import start, handle_callback_query, handle_text_messages, error_handler
 # استيراد معالجات المدير
@@ -88,7 +114,7 @@ logging.getLogger("httpx").setLevel(logging.WARNING)
 
 async def main_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
-    
+
     # توجيه التحديثات بناءً على حالة المستخدم وما إذا كان أدمن
     # الأولوية لحالات الأدمن إذا كان المستخدم أدمن وفي حالة أدمن
     if user_id in ADMIN_ID and user_id in USER_STATE and USER_STATE.get(user_id, "").startswith("ADMIN_"):
@@ -101,7 +127,7 @@ async def main_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             # رسالة لأي نوع رسالة غير نصية أو مستند في وضع الأدمن
             if update.message:
                 await update.message.reply_text("عذراً، أنا أنتظر نصاً أو ملف قاعدة بيانات منك في وضع الأدمن.", reply_markup=admin_cancel_inline_button())
-                
+
     else: # تحديثات المستخدم العادي
         if update.callback_query:
             await handle_callback_query(update, context)
@@ -120,11 +146,11 @@ def main():
 
     # إضافة معالج الأخطاء العام
     # هذا المعالج هو المكان الذي يجب أن يتم فيه تسجيل الأخطاء باستخدام logger.error()
-    application.add_error_handler(error_handler) 
+    application.add_error_handler(error_handler)
 
     # معالج أمر /start للمستخدمين العاديين (يستخدم دالة start من user_handlers)
     application.add_handler(CommandHandler("start", start))
-    
+
     # معالج أمر /admin للمديرين (يستخدم دالة admin_start من admin_handlers)
     application.add_handler(CommandHandler("admin", admin_start, filters=filters.User(ADMIN_ID)))
 
