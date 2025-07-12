@@ -1,0 +1,806 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>متجر سيريانا</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* #style.css */
+        /* تعريف الألوان لكل ثيم */
+        :root {
+            /* Purple Theme (Default) */
+            --primary-color: #8A2BE2; /* بنفسجي أزرق (Violet Blue) */
+            --secondary-color: #9370DB; /* بنفسجي فاتح متوسط (Medium Purple) */
+            --accent-color: #C71585; /* بنفسجي وردي (Medium Violet Red) للتأكيد */
+            --bg-light: #F8F0FF; /* خلفية بنفسجية فاتحة جداً */
+            --text-dark: #333333; /* نص رمادي غامق */
+            --text-light: #fff; /* نص فاتح */
+            --card-bg: #FFFFFF; /* خلفية البطاقات بيضاء */
+            --border-color: #E6D0F9; /* لون حدود بنفسجي فاتح */
+            --shadow-light: rgba(138, 43, 226, 0.1); /* ظل خفيف بنفسجي */
+            --shadow-medium: rgba(138, 43, 226, 0.2); /* ظل متوسط بنفسجي */
+            --copy-btn-bg: var(--accent-color);
+            --copy-btn-text: var(--text-light); /* نص أبيض على زر النسخ */
+            --placeholder-color: #A0A0A0; /* رمادي فاتح للمؤقتات */
+            --hr-color-primary: var(--primary-color);
+            --hr-color-secondary: var(--secondary-color);
+        }
+
+        /* Dark Theme (Purple Accents) */
+        body.dark-theme {
+            --primary-color: #9370DB; /* بنفسجي فاتح متوسط للوضع الداكن */
+            --secondary-color: #6A0DAD; /* بنفسجي داكن (Dark Violet) */
+            --accent-color: #DDA0DD; /* بنفسجي فاتح (Plum) للتأكيد */
+            --bg-light: #2C2C2C; /* خلفية داكنة جداً */
+            --text-dark: #E0E0E0; /* نص فاتح */
+            --text-light: #2C2C2C; /* نص غامق للخلفيات الفاتحة داخل الداكن */
+            --card-bg: #3A3A3A; /* خلفية البطاقات الداكنة */
+            --border-color: #555555; /* لون الحدود الداكنة */
+            --shadow-light: rgba(147, 112, 219, 0.1);
+            --shadow-medium: rgba(147, 112, 219, 0.2);
+            --copy-btn-bg: var(--accent-color);
+            --copy-btn-text: var(--text-light);
+            --placeholder-color: #BDBDBD;
+            --hr-color-primary: var(--accent-color);
+            --hr-color-secondary: var(--primary-color);
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-bottom: 0;
+            position: relative;
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        /* البطاقة الجديدة */
+        .info-card {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: var(--text-light);
+            padding: 0.8rem 0.6rem; /* تصغير البادينج أكثر */
+            margin-top: 1.2rem; /* تصغير الهامش العلوي */
+            margin-bottom: 1.2rem; /* تصغير الهامش السفلي */
+            border-radius: 15px;
+            box-shadow: 0 8px 25px var(--shadow-medium);
+            width: 90%; /* تصغير العرض */
+            max-width: 400px; /* تصغير أقصى عرض */
+            text-align: center;
+            animation: fadeInDown 0.8s ease-out;
+            position: relative;
+            z-index: 10;
+            transition: background 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        .info-card h3 {
+            font-size: 1.6rem; /* تصغير حجم الخط */
+            font-weight: 700;
+            margin-bottom: 0.8rem; /* تصغير الهامش السفلي للعنوان */
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.4rem 0; /* تصغير البادينج */
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            font-size: 0.95rem; /* تصغير حجم الخط */
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 600;
+            opacity: 0.9;
+        }
+
+        .info-value {
+            font-weight: 700;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+        }
+        
+        .dark-theme .info-value {
+             color: var(--accent-color);
+        }
+
+        .copy-btn {
+            background-color: var(--copy-btn-bg);
+            color: var(--copy-btn-text);
+            border: none;
+            border-radius: 6px;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-right: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
+            box-shadow: 0 2px 4px var(--shadow-light);
+        }
+
+        .copy-btn:hover {
+            background-color: var(--secondary-color); /* يتغير إلى لون ثانوي عند التحويم */
+            transform: translateY(-1px);
+        }
+        
+        .dark-theme .copy-btn:hover {
+            background-color: var(--primary-color);
+        }
+
+        .copy-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Hero banner (خلفية شفافة) */
+        .hero-banner {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: var(--text-light);
+            padding: 0;
+            min-height: 0;
+            margin: 0;
+            border-radius: 0;
+            box-shadow: none;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 70%; /* تصغير ارتفاع البانر الشفاف أكثر */
+            z-index: 1;
+            opacity: 0.1; /* تقليل الشفافية أكثر */
+            transition: background 0.4s ease, opacity 0.4s ease;
+        }
+
+        .hero-banner h1, .hero-banner p {
+            display: none;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 95%;
+            flex-grow: 1;
+            margin-top: 0;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px var(--shadow-medium);
+            transition: all 0.3s ease-in-out, background-color 0.4s ease;
+            box-sizing: border-box;
+            overflow-y: auto;
+            position: relative;
+            z-index: 5;
+        }
+
+        .container:hover {
+            box-shadow: 0 15px 40px var(--shadow-medium);
+        }
+
+        /* خطوط الفاصل */
+        hr {
+            border-top: 1px solid var(--hr-color-primary);
+            opacity: 0.6;
+            transition: border-color 0.4s ease;
+        }
+        hr.border-secondary {
+            border-top: 1px solid var(--hr-color-secondary);
+        }
+
+        /* Loading Spinner */
+        #loading-spinner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100px;
+            color: var(--primary-color);
+        }
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+        }
+
+        /* Buttons Styling */
+        .btn {
+            font-weight: 600;
+            padding: 0.8rem 1.8rem;
+            border-radius: 50px;
+            transition: all 0.3s ease-in-out, background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease;
+            box-shadow: 0 4px 10px var(--shadow-light);
+            margin: 0.3rem;
+            font-size: 1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: var(--text-light); /* تغيير لون النص إلى فاتح */
+        }
+
+        .btn-primary:hover, .btn-primary:focus {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px var(--shadow-medium);
+            color: var(--text-light); /* يبقى فاتح */
+        }
+
+        .btn-outline-secondary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+            background-color: transparent;
+        }
+        .dark-theme .btn-outline-secondary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-outline-secondary:hover, .btn-outline-secondary:focus {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            border-color: var(--primary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px var(--shadow-medium);
+        }
+
+        /* Category and Subcategory Containers */
+        #categories, #subcategories {
+            background-color: var(--bg-light);
+            transition: background-color 0.4s ease;
+            justify-content: center;
+        }
+
+        /* Search Bar Styling */
+        .search-bar-container {
+            margin-bottom: 2rem;
+            position: relative;
+            animation: fadeIn 1s ease-out;
+        }
+        .search-input {
+            background-color: var(--card-bg);
+            color: var(--text-dark);
+            border: 2px solid var(--border-color);
+            transition: all 0.3s ease, background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease;
+            padding-right: 3rem;
+            border-radius: 10px;
+        }
+        .search-input::placeholder {
+            color: var(--placeholder-color);
+        }
+        .search-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem var(--primary-color);
+        }
+        .search-icon {
+            color: var(--primary-color);
+            transition: color 0.4s ease;
+            position: absolute;
+            top: 50%;
+            right: 1rem;
+            transform: translateY(-50%);
+            font-size: 1.2rem;
+        }
+
+        /* Services List */
+        .list-group-item {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease-in-out, background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease;
+            margin-bottom: 0.5rem;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.25rem;
+        }
+
+        .list-group-item:nth-child(even) {
+            background-color: var(--bg-light);
+        }
+
+        .list-group-item:hover {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            border-color: var(--primary-color);
+            transform: translateX(-5px);
+        }
+
+        .list-group-item:hover .service-price {
+            color: var(--text-light);
+        }
+
+        .service-price {
+            color: var(--accent-color);
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: color 0.4s ease;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .info-card {
+                margin-top: 1rem;
+                margin-bottom: 1rem;
+                padding: 0.6rem 0.5rem; /* تصغير البادينج أكثر على الشاشات الصغيرة */
+                max-width: 95%; /* عرض أكبر قليلاً للشاشات الصغيرة */
+            }
+            .info-card h3 {
+                font-size: 1.4rem; /* تصغير حجم الخط أكثر */
+                margin-bottom: 0.6rem;
+            }
+            .info-item {
+                font-size: 0.85rem; /* تصغير حجم الخط أكثر */
+                padding: 0.3rem 0;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .info-value {
+                width: 100%;
+                justify-content: space-between;
+                margin-top: 5px;
+            }
+            .copy-btn {
+                padding: 0.2rem 0.4rem;
+                font-size: 0.75rem;
+                margin-right: 0;
+            }
+            .container {
+                margin-bottom: 1rem;
+                padding: 0.8rem;
+            }
+            .btn {
+                padding: 0.5rem 0.8rem; /* تصغير بادينج الأزرار */
+                font-size: 0.85rem;
+                margin: 0.2rem;
+                width: calc(50% - 0.4rem); /* لجعل زرين بجانب بعضهما */
+            }
+            #categories, #subcategories {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                padding: 0.8rem;
+            }
+            #categories button, #subcategories button {
+                flex-grow: 1;
+                min-width: calc(50% - 0.4rem); /* لجعل زرين بجانب بعضهما */
+                max-width: calc(50% - 0.4rem);
+                box-sizing: border-box; /* التأكد من أن البادينج والهامش لا يتسببان في تجاوز العرض */
+            }
+            .search-input {
+                padding: 0.8rem 1rem;
+                font-size: 1rem;
+                padding-right: 3rem;
+            }
+            .search-icon {
+                right: 1rem;
+                font-size: 1.1rem;
+            }
+            .list-group-item {
+                font-size: 0.95rem;
+                padding: 0.8rem 1rem;
+            }
+            .service-price {
+                font-size: 1rem;
+            }
+            .theme-toggle-btn {
+                top: 0.8rem;
+                left: 0.8rem;
+                width: 40px;
+                height: 40px;
+                font-size: 1.1rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+
+        .btn.active-category, .btn.active-subcategory {
+            animation: pulse 0.8s infinite alternate;
+            box-shadow: 0 0 0 0.25rem var(--primary-color);
+        }
+
+        /* Theme Toggle Button */
+        .theme-toggle-btn {
+            position: fixed;
+            top: 1.5rem;
+            left: 1.5rem;
+            background-color: var(--card-bg);
+            color: var(--primary-color);
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.3rem;
+            cursor: pointer;
+            box-shadow: 0 5px 15px var(--shadow-medium);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .theme-toggle-btn:hover {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            transform: rotate(15deg) scale(1.1);
+            border-color: var(--primary-color);
+        }
+
+        .theme-toggle-btn i {
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle-btn:hover i {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <button id="theme-toggle" class="theme-toggle-btn">
+        <i class="fas fa-sun"></i>
+    </button>
+
+    <div class="info-card">
+        <h3>متجر سيريانا</h3>
+        <div class="info-item">
+            <span class="info-label">ايديك:</span>
+            <span class="info-value">
+                <span id="user-id">123456789</span>
+                <button class="copy-btn" onclick="copyToClipboard('user-id')">نسخ <i class="fas fa-copy"></i></button>
+            </span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">رصيدك:</span>
+            <span class="info-value"><span id="user-balance">50.00</span> $</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">المبلغ المنفق:</span>
+            <span class="info-value"><span id="amount-spent">120.50</span> $</span>
+        </div>
+    </div>
+
+    <div class="hero-banner"></div>
+
+    <div class="container">
+        <div id="categories" class="d-flex flex-wrap gap-2 mb-4">
+            <div id="loading-spinner" class="text-center w-100">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">جاري التحميل...</span>
+                </div>
+                <p class="text-muted mt-2">جاري تحميل التصنيفات الرئيسية...</p>
+            </div>
+        </div>
+
+        <hr class="my-4 border-primary">
+        <div id="subcategories" class="d-flex flex-wrap gap-2 mb-4">
+            <p class="text-muted w-100 text-center">اختر تصنيفًا رئيسيًا لعرض التصنيفات الفرعية.</p>
+        </div>
+
+        <div class="search-bar-container">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" id="serviceSearch" class="form-control search-input" placeholder="ابحث عن خدمة...">
+        </div>
+
+        <hr class="my-4 border-secondary">
+        <ul id="services" class="list-group">
+            <p class="text-muted w-100 text-center">اختر تصنيفًا فرعيًا لعرض الخدمات، أو ابحث مباشرة.</p>
+        </ul>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // #main.js
+        let allServices = [];
+        let currentSubcategoryId = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOMContentLoaded: تم تحميل الصفحة بالكامل.');
+            loadCategories();
+            document.getElementById('serviceSearch').addEventListener('input', filterServices);
+
+            // Theme Toggle Logic
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            const body = document.body;
+            const currentTheme = localStorage.getItem('theme');
+
+            // Apply saved theme on load
+            if (currentTheme) {
+                body.classList.add(currentTheme);
+                updateThemeToggleIcon(currentTheme);
+            } else {
+                body.classList.add('light-theme');
+                updateThemeToggleIcon('light-theme');
+            }
+
+            themeToggleBtn.addEventListener('click', () => {
+                if (body.classList.contains('dark-theme')) {
+                    body.classList.remove('dark-theme');
+                    body.classList.add('light-theme');
+                    localStorage.setItem('theme', 'light-theme');
+                    updateThemeToggleIcon('light-theme');
+                } else {
+                    body.classList.remove('light-theme');
+                    body.classList.add('dark-theme');
+                    localStorage.setItem('theme', 'dark-theme');
+                    updateThemeToggleIcon('dark-theme');
+                }
+            });
+
+            function updateThemeToggleIcon(theme) {
+                const icon = themeToggleBtn.querySelector('i');
+                if (theme === 'dark-theme') {
+                    icon.classList.remove('fa-sun');
+                    icon.classList.add('fa-moon');
+                } else {
+                    icon.classList.remove('fa-moon');
+                    icon.classList.add('fa-sun');
+                }
+            }
+        });
+
+        async function fetchData(url) {
+            try {
+                console.log(`FetchData: جلب البيانات من: ${url}`);
+                // يمكنك إزالة هذا السطر في بيئة الإنتاج للسماح بالتحميل السريع
+                await new Promise(resolve => setTimeout(resolve, 500)); 
+                const res = await fetch(url);
+                if (!res.ok) {
+                    throw new Error(`HTTP error! Status: ${res.status}`);
+                }
+                const data = await res.json();
+                console.log(`FetchData: البيانات التي تم جلبها من ${url}:`, data);
+                return data;
+            } catch (error) {
+                console.error(`FetchData Error for ${url}:`, error);
+                const targetElementId = url.includes('/categories') ? 'categories' :
+                                        url.includes('/subcategories') ? 'subcategories' : 'services';
+                document.getElementById(targetElementId).innerHTML = `
+                    <div class="alert alert-danger text-center" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i> حدث خطأ أثناء تحميل البيانات. يرجى التأكد من أن خادمك يعمل بشكل صحيح وأن مسار API (${url}) متاح.
+                    </div>
+                `;
+                return [];
+            }
+        }
+
+        async function loadCategories() {
+            const container = document.getElementById('categories');
+            container.innerHTML = `
+                <div id="loading-spinner" class="text-center w-100">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">جاري التحميل...</span>
+                    </div>
+                    <p class="text-muted mt-2">جاري تحميل التصنيفات الرئيسية...</p>
+                </div>
+            `;
+
+            console.log('loadCategories: بدء تحميل التصنيفات الرئيسية من الخادم.');
+            // *** هذا المسار يجب أن يكون endpoint حقيقي في خادمك يعيد قائمة التصنيفات الرئيسية ***
+            const categories = await fetchData('/categories'); 
+
+            container.innerHTML = '';
+            if (categories.length === 0) {
+                container.innerHTML = '<p class="text-muted w-100 text-center">لا توجد تصنيفات رئيسية حالياً. يرجى التحقق من بيانات الخادم.</p>';
+                return;
+            }
+
+            categories.forEach((cat, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'btn btn-primary';
+                btn.textContent = cat.name;
+                btn.setAttribute('data-category-id', cat.id);
+                btn.onclick = () => {
+                    setActiveButton(btn, 'category');
+                    loadSubcategories(cat.id);
+                    document.getElementById('serviceSearch').value = '';
+                };
+                container.appendChild(btn);
+                setTimeout(() => {
+                    btn.style.opacity = '1';
+                    btn.style.transform = 'translateY(0)';
+                }, 100 * index);
+            });
+            console.log('loadCategories: تم تحميل التصنيفات الرئيسية بنجاح من الخادم.');
+        }
+
+        async function loadSubcategories(parentId) {
+            const container = document.getElementById('subcategories');
+            const servicesList = document.getElementById('services');
+            container.innerHTML = `
+                <div id="loading-spinner" class="text-center w-100">
+                    <div class="spinner-border text-secondary" role="status">
+                        <span class="visually-hidden">جاري التحميل...</span>
+                    </div>
+                    <p class="text-muted mt-2">جاري تحميل التصنيفات الفرعية...</p>
+                </div>
+            `;
+            servicesList.innerHTML = '<p class="text-muted w-100 text-center">اختر تصنيفًا فرعيًا لعرض الخدمات.</p>';
+            allServices = [];
+
+            console.log(`loadSubcategories: بدء تحميل التصنيفات الفرعية للمعرض ${parentId} من الخادم.`);
+            // *** هذا المسار يجب أن يكون endpoint حقيقي في خادمك يعيد قائمة التصنيفات الفرعية بناءً على parent_id ***
+            const subcategories = await fetchData(`/subcategories?parent_id=${parentId}`);
+
+            container.innerHTML = '';
+            if (subcategories.length === 0) {
+                container.innerHTML = '<p class="text-muted w-100 text-center">لا توجد تصنيفات فرعية لهذا التصنيف. يرجى التحقق من بيانات الخادم.</p>';
+                return;
+            }
+
+            subcategories.forEach((sub, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'btn btn-outline-secondary';
+                btn.textContent = sub.name;
+                btn.setAttribute('data-subcategory-id', sub.id);
+                btn.onclick = () => {
+                    setActiveButton(btn, 'subcategory');
+                    currentSubcategoryId = sub.id;
+                    loadServices(sub.id);
+                    document.getElementById('serviceSearch').value = '';
+                };
+                container.appendChild(btn);
+                setTimeout(() => {
+                    btn.style.opacity = '1';
+                    btn.style.transform = 'translateY(0)';
+                }, 100 * index);
+            });
+            console.log(`loadSubcategories: تم تحميل التصنيفات الفرعية للمعرض ${parentId} بنجاح من الخادم.`);
+        }
+
+        async function loadServices(subcategoryId) {
+            const list = document.getElementById('services');
+            list.innerHTML = `
+                <div id="loading-spinner" class="text-center w-100">
+                    <div class="spinner-border text-accent" role="status">
+                        <span class="visually-hidden">جاري التحميل...</span>
+                    </div>
+                    <p class="text-muted mt-2">جاري تحميل الخدمات...</p>
+                </div>
+            `;
+
+            console.log(`loadServices: بدء تحميل الخدمات للمعرض الفرعي ${subcategoryId} من الخادم.`);
+            // *** هذا المسار يجب أن يكون endpoint حقيقي في خادمك يعيد قائمة الخدمات بناءً على subcategory_id ***
+            const services = await fetchData(`/services?subcategory_id=${subcategoryId}`);
+            
+            allServices = services;
+            renderServices(allServices);
+            console.log(`loadServices: تم تحميل الخدمات للمعرض الفرعي ${subcategoryId} بنجاح من الخادم.`);
+        }
+
+        function renderServices(servicesToRender) {
+            const list = document.getElementById('services');
+            list.innerHTML = '';
+            if (servicesToRender.length === 0) {
+                list.innerHTML = '<p class="text-muted w-100 text-center">لا توجد خدمات مطابقة لنتائج البحث أو لا توجد خدمات متاحة حالياً.</p>';
+                return;
+            }
+
+            servicesToRender.forEach((service, index) => {
+                const li = document.createElement('li');
+                li.className = 'list-group-item';
+                li.innerHTML = `
+                    <span>${service.name}</span>
+                    <span class="service-price">${service.price} $</span>
+                `;
+                list.appendChild(li);
+                setTimeout(() => {
+                    li.style.opacity = '1';
+                    li.style.transform = 'translateX(0)';
+                }, 100 * index);
+            });
+        }
+
+        function filterServices() {
+            const searchTerm = document.getElementById('serviceSearch').value.toLowerCase();
+            const filtered = allServices.filter(service =>
+                service.name.toLowerCase().includes(searchTerm)
+            );
+            renderServices(filtered);
+        }
+
+        function setActiveButton(activeButton, type) {
+            console.log(`setActiveButton: تفعيل الزر ${activeButton.textContent} من نوع ${type}.`);
+            let buttons;
+            if (type === 'category') {
+                buttons = document.querySelectorAll('#categories .btn');
+            } else if (type === 'subcategory') {
+                buttons = document.querySelectorAll('#subcategories .btn');
+            }
+
+            if (buttons) {
+                buttons.forEach(btn => {
+                    btn.classList.remove('active-category', 'active-subcategory');
+                    if (type === 'category') {
+                        btn.classList.remove('btn-secondary', 'btn-outline-secondary');
+                        btn.classList.add('btn-primary');
+                        btn.style.backgroundColor = '';
+                        btn.style.borderColor = '';
+                        btn.style.color = '';
+                    } else if (type === 'subcategory') {
+                        btn.classList.remove('btn-primary', 'btn-secondary');
+                        btn.classList.add('btn-outline-secondary');
+                        btn.style.backgroundColor = '';
+                        btn.style.color = '';
+                        btn.style.borderColor = '';
+                    }
+                });
+                activeButton.classList.add(`active-${type}`);
+                if (type === 'category') {
+                    activeButton.classList.remove('btn-primary');
+                    activeButton.style.backgroundColor = 'var(--secondary-color)';
+                    activeButton.style.borderColor = 'var(--secondary-color)';
+                    activeButton.style.color = 'var(--text-light)'; /* تغيير لون النص ليتناسب مع الخلفية البنفسجية */
+                } else if (type === 'subcategory') {
+                    activeButton.classList.remove('btn-outline-secondary');
+                    activeButton.style.backgroundColor = 'var(--primary-color)';
+                    activeButton.style.color = 'var(--text-light)'; /* تغيير لون النص ليتناسب مع الخلفية البنفسجية */
+                    activeButton.style.borderColor = 'var(--primary-color)';
+                }
+            }
+        }
+
+        function copyToClipboard(elementId) {
+            const element = document.getElementById(elementId);
+            const textToCopy = element.textContent || element.innerText;
+            navigator.clipboard.writeText(textToCopy)
+                .then(() => {
+                    alert('تم نسخ ' + textToCopy + ' بنجاح!');
+                    console.log('تم النسخ إلى الحافظة: ' + textToCopy);
+                })
+                .catch(err => {
+                    console.error('فشل النسخ إلى الحافظة: ', err);
+                    alert('فشل النسخ!');
+                });
+        }
+
+        console.log('main.js: انتهى تحميل السكريبت.');
+    </script>
+</body>
+</html>
