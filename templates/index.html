@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -119,7 +118,7 @@
             display: flex;
             align-items: center;
         }
-        
+
         .dark-theme .info-value {
              color: var(--accent-color);
         }
@@ -142,7 +141,7 @@
             background-color: var(--secondary-color); /* يتغير إلى لون ثانوي عند التحويم */
             transform: translateY(-1px);
         }
-        
+
         .dark-theme .copy-btn:hover {
             background-color: var(--primary-color);
         }
@@ -491,17 +490,17 @@
         <div class="info-item">
             <span class="info-label">ايديك:</span>
             <span class="info-value">
-                <span id="user-id">123456789</span>
+                <span id="user-id">---</span>
                 <button class="copy-btn" onclick="copyToClipboard('user-id')">نسخ <i class="fas fa-copy"></i></button>
             </span>
         </div>
         <div class="info-item">
             <span class="info-label">رصيدك:</span>
-            <span class="info-value"><span id="user-balance">50.00</span> $</span>
+            <span class="info-value"><span id="user-balance">---</span> $</span>
         </div>
         <div class="info-item">
             <span class="info-label">المبلغ المنفق:</span>
-            <span class="info-value"><span id="amount-spent">120.50</span> $</span>
+            <span class="info-value"><span id="amount-spent">---</span> $</span>
         </div>
     </div>
 
@@ -539,9 +538,26 @@
         // #main.js
         let allServices = [];
         let currentSubcategoryId = null;
+        let telegramUserId = null; // <--- متغير جديد لتخزين الـ user_id
 
         document.addEventListener('DOMContentLoaded', () => {
             console.log('DOMContentLoaded: تم تحميل الصفحة بالكامل.');
+
+            // استخلاص user_id من URL
+            const urlParams = new URLSearchParams(window.location.search);
+            telegramUserId = urlParams.get('user_id');
+            if (telegramUserId) {
+                console.log(`Telegram User ID: ${telegramUserId}`);
+                document.getElementById('user-id').textContent = telegramUserId;
+                // قم بتحميل بيانات المستخدم بعد الحصول على الـ ID
+                loadUserData(telegramUserId);
+            } else {
+                console.warn('Telegram User ID not found in URL.');
+                document.getElementById('user-id').textContent = 'غير متوفر';
+                document.getElementById('user-balance').textContent = '0.00';
+                document.getElementById('amount-spent').textContent = '0.00';
+            }
+
             loadCategories();
             document.getElementById('serviceSearch').addEventListener('input', filterServices);
 
@@ -562,9 +578,9 @@
             themeToggleBtn.addEventListener('click', () => {
                 if (body.classList.contains('dark-theme')) {
                     body.classList.remove('dark-theme');
-                    body.classList.add('light-theme');
-                    localStorage.setItem('theme', 'light-theme');
-                    updateThemeToggleIcon('light-theme');
+                    body.classList.add('light-theme'); // <--- تم التصحيح هنا
+                    localStorage.setItem('theme', 'light-theme'); // <--- تم التصحيح هنا
+                    updateThemeToggleIcon('light-theme'); // <--- تم التصحيح هنا
                 } else {
                     body.classList.remove('light-theme');
                     body.classList.add('dark-theme');
@@ -585,11 +601,33 @@
             }
         });
 
+        // دالة جديدة لجلب بيانات المستخدم (الرصيد والمبلغ المنفق)
+        async function loadUserData(userId) {
+            console.log(`loadUserData: جلب بيانات المستخدم ${userId}`);
+            try {
+                // *** هذا المسار يجب أن يكون endpoint حقيقي في خادمك يعيد بيانات المستخدم ***
+                const user = await fetchData(`/user_data?user_id=${userId}`);
+                if (user) {
+                    document.getElementById('user-balance').textContent = user.balance.toFixed(2);
+                    document.getElementById('amount-spent').textContent = user.amount_spent.toFixed(2); // افترض وجود 'amount_spent'
+                } else {
+                    console.warn(`User data not found for ID: ${userId}`);
+                    document.getElementById('user-balance').textContent = '0.00';
+                    document.getElementById('amount-spent').textContent = '0.00';
+                }
+            } catch (error) {
+                console.error(`Error loading user data for ${userId}:`, error);
+                document.getElementById('user-balance').textContent = 'خطأ';
+                document.getElementById('amount-spent').textContent = 'خطأ';
+            }
+        }
+
+
         async function fetchData(url) {
             try {
                 console.log(`FetchData: جلب البيانات من: ${url}`);
                 // يمكنك إزالة هذا السطر في بيئة الإنتاج للسماح بالتحميل السريع
-                await new Promise(resolve => setTimeout(resolve, 500)); 
+                await new Promise(resolve => setTimeout(resolve, 500));
                 const res = await fetch(url);
                 if (!res.ok) {
                     throw new Error(`HTTP error! Status: ${res.status}`);
@@ -623,7 +661,7 @@
 
             console.log('loadCategories: بدء تحميل التصنيفات الرئيسية من الخادم.');
             // *** هذا المسار يجب أن يكون endpoint حقيقي في خادمك يعيد قائمة التصنيفات الرئيسية ***
-            const categories = await fetchData('/categories'); 
+            const categories = await fetchData('/categories');
 
             container.innerHTML = '';
             if (categories.length === 0) {
@@ -708,7 +746,7 @@
             console.log(`loadServices: بدء تحميل الخدمات للمعرض الفرعي ${subcategoryId} من الخادم.`);
             // *** هذا المسار يجب أن يكون endpoint حقيقي في خادمك يعيد قائمة الخدمات بناءً على subcategory_id ***
             const services = await fetchData(`/services?subcategory_id=${subcategoryId}`);
-            
+
             allServices = services;
             renderServices(allServices);
             console.log(`loadServices: تم تحميل الخدمات للمعرض الفرعي ${subcategoryId} بنجاح من الخادم.`);
