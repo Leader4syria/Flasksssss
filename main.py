@@ -6,7 +6,7 @@ import os
 
 app = Flask(__name__)
 DATABASE = 'store_bot.db'
-
+bzbzhzz
 def get_db_connection(): # <--- تم تغيير اسم الدالة لتجنب تضارب محتمل مع متغير `db`
     conn = sqlite3.connect(DATABASE)
     conn.row_factory = sqlite3.Row
